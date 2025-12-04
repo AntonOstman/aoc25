@@ -19,10 +19,8 @@ function part1_code()
                best_num = num
             end
          end
-         -- print(num)
       end
 
-      print(best_num)
       score = score + tonumber(tostring(best_num))
    end
 
@@ -31,40 +29,40 @@ end
 
 Cache = {}
 
-function recurse(num)
-
-   if Cache[num] ~= nil then
-      return Cache[num]
-   end
-
-   if num:len() == 12 then
-      return tonumber(num)
-   end
-
+function largest_idx(num, allowed)
    local largest = 0
-   for i=1,num:len() do
-      local ans = recurse(num:sub(1,i-1) .. num:sub(i+1))
-      -- print(ans)
+   local idx = 0
 
-      if ans > largest then
-         largest = ans
+   for i = 1, num:len() do
+      if tonumber(num:sub(i,i)) > largest and num:sub(i):len() >= allowed then
+         largest = tonumber(num:sub(i,i))
+         idx = i
       end
    end
+   return idx
+end
 
-   Cache[num] = largest
-   return largest
+function recurse(num, cur)
+
+   if cur:len() == 12 then
+      return tonumber(cur)
+   end
+
+   local idx = largest_idx(num, 12 - cur:len())
+
+   local ans = recurse(num:sub(idx + 1), cur .. num:sub(idx,idx))
+
+   return ans
 end
 
 function part2_code()
    local score = 0
    for line in io.lines("input") do
-      Largest = 0
-
-      score = score + recurse(line)
-      -- print(string.format("%30.0f", recurse(line)))
+      score = score + recurse(line, "")
    end
 
    print('Part 2', string.format("%30.0f",score))
 end
 
+part1_code()
 part2_code()
